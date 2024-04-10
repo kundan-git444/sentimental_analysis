@@ -1,0 +1,3 @@
+pip install --upgrade ipywidgets
+import nltk
+nltk.download('punkt')

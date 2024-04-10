@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Analysis</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            flex-direction: column; /* Stack elements vertically */
+        }
+        .input-container {
+            width: 100%;
+            max-width: 600px;
+            max-height: fit-content;
+            padding: 20px;
+            box-sizing: border-box; /* Include padding in width calculation */
+            background-color: #ffffff;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center items horizontally */
+        }
+        .container{
+            width: 100%;
+            max-width: 600px;
+            max-height: fit-content;
+            padding: 15px;
+            box-sizing: border-box; /* Include padding in width calculation */
+            background-color: #ffffff;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center; /* Center items horizontally */
+            
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box; /* Include padding in width calculation */
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px;
+            min-width: 450px; /* Minimum height of the textarea */
+            font-size: x-large;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: medium;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333333;
+        }
+        p {
+            margin-bottom: 10px;
+            color: #666666;
+        }
+
+        .emoji {
+            font-size: 48px; /* Larger font size for emojis */
+            margin-right: 10px;
+        }
+
+        .home-button {
+            text-decoration: none;
+            color: #ffffff;
+            width: auto;
+            background-color: #ff6600;
+            padding: 0px 10px; /* Adjusted padding */
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 12px; /* Adjusted font size */
+            display: inline-block; /* Make the button inline */
+        }
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: gray;
+            color: white;
+            text-align: center;
+        }   
+    </style>
+</head>
+<body>
+    <h1>Analyze Sentiment</h1>
+    <div class="input-container">
+        <form id="sentiment-form" action="/analyze" method="post">
+            <textarea name="comment" rows="2" placeholder="Enter your comment..."></textarea>
+            <br>
+            <button type="submit">Analyze</button>
+        </form>
+    </div>
+    {% if sentiment %}
+        <div class="container">
+            <h4> Comment: {{comment}} </h4>
+            <h4> Sentiment: {{ sentiment }} </h4>
+            <br>
+            <span class="emoji">
+                {% if sentiment == 'Positive' %}
+                    &#x1F600; <!-- 😊 -->
+                {% elif sentiment == 'Neutral' %}
+                    &#x1F610; <!-- 😐 -->
+                {% elif sentiment == 'Negative' %}
+                    &#x1F61E; <!-- 😞 -->
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
+    <a href="/" ><button  class="home-button"><h3>Back to csv analysis</h3></button></a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Submit form when Enter key is pressed
+            document.getElementById('sentiment-form').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent default form submission
+                    this.submit(); // Submit the form
+                }
+            });
+        });
+    </script>
+
+
+
+</body>
+
+
+<footer>
+    This is a Roberta model demo by Kundan
+</footer>
+
+</html>
