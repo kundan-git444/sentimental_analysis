@@ -68,6 +68,7 @@ print(df.head())
 
 
 #*************************************************************************
+
 # Function to get sentiment from text
 def polarity_scores_roberta(example):
     labels = ['Negative', 'Neutral', 'Positive']
@@ -141,9 +142,7 @@ def index():
     word_freq = Counter(tokens)
 
     # Find the most common keywords
-    most_common_keywords = word_freq.most_common(5)  # Change 5 to the number of keywords you want to find
-
-    # Print the most common keywords
+    most_common_keywords = word_freq.most_common(5)  
     
     categories = []
     values = []
@@ -173,8 +172,6 @@ def index():
 def analyze():
     if request.method == 'POST':
         comment = request.form['comment']
-        # Perform sentiment analysis on 'comment' here
-        # For now, let's assume sentiment is calculated as 'positive' for demonstration
         sentiment = polarity_scores_roberta(comment)
         return render_template('analyze.html', sentiment=sentiment, comment=comment)
     return render_template('analyze.html')
