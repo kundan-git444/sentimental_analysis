@@ -108,8 +108,6 @@
         <br> {{Number_of_comments}}
     </div>
 
-    
-
     <div class="details">
         <b>Negative comments: </b> {{ negative_count }} &nbsp;&nbsp;
         <b>Neutral comments: </b>{{ neutral_count }}&nbsp;&nbsp;
@@ -117,14 +115,16 @@
     </div>
    
     <div class="details"> 
-        <b>Most Positive Comment: <br></b> {{mostpositivecomment}}<br> 
+        <b>Most Positive Comment: <br></b> {{mostpositivecomment}}
+        <br> 
         <br>
         <b>Score: </b>{{positive_score}}
     </div>
 
     <div class="details"> 
         <b>Comment with most reactions : <br></b> {{mostreactedcomment}}
-        <br><br>
+        <br>
+        <br>
         <b>Reaction count:    &nbsp;&nbsp;  </b> {{ reactioncount}}&nbsp;&nbsp; 
         <b> Sentiment: &nbsp;&nbsp; </b> {{cwmrsentiment}}
     </div>
@@ -135,36 +135,18 @@
         <b>Score:  </b>{{negative_score}}
     </div>
 
-   
-
-
-    
-
     <div class="image-container">
         <img src="{{ url_for('static', filename='plot.png') }}" alt="Sentimental Analysis" width="600" height="400">
         <img src="{{ url_for('static', filename='plot2.png') }}" alt="Most common words" width="600" height="400">
     </div>
-
     <br>
-    
-    
+
 </body>
+
 <div class="nextpagebutton" >
     <strong>Test Model with custom comment</strong>
     <br>
     <br>
-    <a href="/analyze"  ><button > 🡆</button></a>
+    <a href="/analyze"  ><button > TEST🡆</button></a>
 </div>
 </html>
-
-<!-- <p>Negative comments: {{ negative_comments }}</p>
-    <p>Neutral comments: {{ neutral_comments }}</p>
-    <p>Positive comments: {{ positive_comments }}</p>
-    <div class="details">
-        <p> Neutral comments: &nbsp;&nbsp; </p> 
-        {{ neutral_comments }}
-    </div>
-    <div class="details">
-        <p> Positive comments: &nbsp;&nbsp;</p> 
-        &nbsp;&nbsp;{{ positive_comments }}
-    </div>-->

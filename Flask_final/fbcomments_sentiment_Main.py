@@ -7,13 +7,10 @@ import matplotlib as mpl
 mpl.rcParams.update({'font.size': 14})
 
 
-
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-
-app = Flask(__name__)
 
 
 Model = "cardiffnlp/twitter-roberta-base-sentiment"
@@ -25,21 +22,16 @@ model = AutoModelForSequenceClassification.from_pretrained(Model)
 import pandas as pd
 import re
 
-
 path = "csv files\ESUIT _ Comments Exporter for Facebook™ (200).csv"
-
-
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv(path)
 
-
 #downscale for easy running
 #df = df.head(10)  #selecting top 100 comments
 
-Number_of_comments = len(df)
 
-# Define a function to remove special characters and non-English text
+#function to remove special characters and non-English text
 def clean_text(text):
     # Remove links starting with https://
     text = re.sub(r'https://\S+', '', text)
@@ -52,7 +44,8 @@ def clean_text(text):
     return text
 
 # Define the columns you want to keep
-selected_columns = ['Author', 'Content', 'CommentAt','ReactionsCount','SubCommentsCount']  # Add the column names you want to keep
+# Add the column names you want to keep
+selected_columns = ['Author', 'Content', 'CommentAt','ReactionsCount','SubCommentsCount']  
 
 # Remove all other columns
 df = df[selected_columns]
@@ -64,11 +57,9 @@ df['Author'] = df['Author'].apply(clean_text)
 # Replace empty cells in the 'cleaned_text' column with '-'
 df['cleaned_text'] = df['cleaned_text'].apply(lambda x: '-' if pd.isna(x) or x.strip() == '' else x)
 df['Author'] = df['Author'].apply(lambda x: 'Unknown_name' if pd.isna(x) or x.strip() == '' else x)
+
+#data frame structure
 print(df.head())
-# Save the modified DataFrame back to a CSV file
-
-
-
 #*************************************************************************
 # Function to get sentiment from text
 def polarity_scores_roberta(example):
@@ -81,8 +72,7 @@ def polarity_scores_roberta(example):
     sentiment = [sentiment, max(scores)]
     return sentiment
 #**************************************************************************************
-#df = pd.read_csv(file, encoding='UTF-8')
-    # Process the comments and count sentiments
+#**************** CORE*****************************************************************
 negative_count, neutral_count, positive_count = 0, 0, 0
 
 #comment with mostreactions
@@ -94,6 +84,7 @@ mostreactedcomment = "None"
 negative_score = 0
 mostnegativecomment = "None"
 
+#most positive comment
 positive_score = 0
 mostpositivecomment = "None"
 
@@ -121,7 +112,7 @@ for i, row in df.iterrows():
             positive_score = score
             mostpositivecomment = row['Content']
 
-
+#***************Plotting Graph of Sentiment********************************
 categories =["Negative","Neutral", "Positive"]
 values = [negative_count, neutral_count, positive_count]
 plt.figure(figsize=(10, 6))
@@ -155,17 +146,16 @@ tokens = [word for word in tokens if word not in stop_words]
 word_freq = Counter(tokens)
 
 # Find the most common keywords
-most_common_keywords = word_freq.most_common(5)  # Change 5 to the number of keywords you want to find
+# Change 5 to the number of keywords you want to find
+most_common_keywords = word_freq.most_common(5)  
 
-# Print the most common keywords
+#*****************Plotting Graph of Most common words*************************
 
 categories = []
 values = []
-
 for keyword, freq in most_common_keywords:
     categories.append(keyword)
     values.append(freq)
-
 
 plt.figure(figsize=(10, 6))
 plt.barh(categories, values, color='#2bc2c2')
@@ -173,6 +163,7 @@ plt.xlabel('Count')
 plt.ylabel('Freqent words')
 plt.title('Most Common Words')
 plt.savefig("Flask_final\static\plot2.png")
+#**********************************************************************************************************
 #************************Data to be sent to html page *******************************************************
 
 template_data = {
@@ -182,7 +173,7 @@ template_data = {
     'mostreactedcomment': mostreactedcomment,
     'reactioncount': reactioncount,
     'selectedfile': path[10:],
-    'Number_of_comments': Number_of_comments,
+    'Number_of_comments': len(df),
     'mostnegativecomment': mostnegativecomment,
     'negative_score': negative_score,
     'mostpositivecomment': mostpositivecomment,
@@ -190,10 +181,11 @@ template_data = {
     'cwmrsentiment': cwmrsentiment
 }
 #**************Flask Routes***********************************************************
+app = Flask(__name__)
+
 @app.route('/')
 def index():
     return render_template('index.html', **template_data)
-
 
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
@@ -203,6 +195,5 @@ def analyze():
         return render_template('analyze.html', sentiment=sentiment[0], comment=comment)
     return render_template('analyze.html')
 
-
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug = True)
