@@ -88,10 +88,19 @@ mostnegativecomment = "None"
 positive_score = 0
 mostpositivecomment = "None"
 
+#Reactions on Positive comments
+positive_reactions = 0
+
+#Reactions on Negative comments
+negative_reactions = 0
+
+#Reactions on Neutral comments
+neutral_reactions = 0
+
+
 for i, row in df.iterrows():
     text = row['cleaned_text']
     tempcount = row['ReactionsCount']
-    
     templist = polarity_scores_roberta(text)
     roberta_result = templist[0]
     score = templist[1]
@@ -101,13 +110,16 @@ for i, row in df.iterrows():
         cwmrsentiment = templist[1]
     if roberta_result == "Negative":
         negative_count += 1
+        negative_reactions += tempcount
         if negative_score<score:
             negative_score = score
             mostnegativecomment = row['Content']
     elif roberta_result == "Neutral":
         neutral_count += 1
+        neutral_reactions += tempcount
     elif roberta_result == "Positive":
         positive_count += 1
+        positive_reactions += tempcount
         if positive_score<score:
             positive_score = score
             mostpositivecomment = row['Content']
@@ -122,6 +134,18 @@ plt.xlabel('Count')
 plt.ylabel('Sentiment')
 plt.title('Sentiment_Analysis')
 plt.savefig("Flask_final\static\plot.png")
+
+
+#*********************Plotting Graph of Sentimental Reactions*********************
+categories =["Negative", "Neutral","Positive"]
+values = [negative_reactions,neutral_reactions, positive_reactions]
+plt.figure(figsize=(10, 6))
+colors = ['#db4437','#f4b400','#0e9d58']
+plt.bar(categories, values, color=colors)
+plt.xlabel('Sentiment')
+plt.ylabel('Number of Reactions')
+plt.title('Sentiment on Reactions')
+plt.savefig("Flask_final\static\plot3.png")
 
 
 # ************************* Counting Most Common Words*******************************************
@@ -150,19 +174,21 @@ word_freq = Counter(tokens)
 most_common_keywords = word_freq.most_common(5)  
 
 #*****************Plotting Graph of Most common words*************************
-
 categories = []
 values = []
 for keyword, freq in most_common_keywords:
     categories.append(keyword)
     values.append(freq)
 
-plt.figure(figsize=(10, 6))
+
+plt.figure(figsize=(10, 6), dpi=400)
 plt.barh(categories, values, color='#2bc2c2')
 plt.xlabel('Count')
-plt.ylabel('Freqent words')
+plt.ylabel('Frequent words')
 plt.title('Most Common Words')
-plt.savefig("Flask_final\static\plot2.png")
+plt.savefig("Flask_final\static\plot2.png", bbox_inches='tight', dpi=400)
+
+
 #**********************************************************************************************************
 #************************Data to be sent to html page *******************************************************
 

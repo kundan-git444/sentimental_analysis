@@ -52,11 +52,27 @@
             justify-content: center; /* Center items horizontally */
             margin-top: 20px; /* Add some space above the images */
             float: left;
+            
+        }
+        .image-container2 {
+            display: flex; /* Use flexbox for layout */
+            margin-left: 25%;
+            margin-right: 25%;
+            justify-content: center; /* Center items horizontally */
+            margin-top: 20px; /* Add some space above the images */
+            float: left;
+            
+        }
+        .image-container2 img {
+            margin: 0 10px; /* Add some space between images */
+            /* Make sure the image doesn't exceed its container  max-width: 100%;*/
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 5px; /* Add rounded corners to the image */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a light shadow for depth */
         }
 
         .image-container img {
             margin: 0 10px; /* Add some space between images */
-            
             max-width: 100%; /* Make sure the image doesn't exceed its container */
             height: auto; /* Maintain aspect ratio */
             border-radius: 5px; /* Add rounded corners to the image */
@@ -139,9 +155,15 @@
 
     <div class="image-container">
         <img src="{{ url_for('static', filename='plot.png') }}" alt="Sentimental Analysis" width="600" height="400">
-        <img src="{{ url_for('static', filename='plot2.png') }}" alt="Most common words" width="600" height="400">
+        <img src="{{ url_for('static', filename='plot3.png') }}" alt="Most common words" width="600" height="400">
+        
+        
+        
     </div>
     <br>
+    <div class="image-container2">
+        <img src="{{ url_for('static', filename='plot2.png') }}" alt="Most common words" width="600" height="400">
+    </div>
 
 </body>
 
