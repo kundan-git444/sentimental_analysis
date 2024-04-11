@@ -1,3 +1,5 @@
 pip install --upgrade ipywidgets
 import nltk
 nltk.download('punkt')
+
+TO PERFORM ANALYSIS RUN fbcomments_sentiment_Main.py
