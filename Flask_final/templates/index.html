@@ -7,6 +7,7 @@
             background-color: #f4f6f9; /* Light gray background color */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Set a common font for better readability */
             /* Center align text */
+            background: linear-gradient(90.6deg, rgb(59, 158, 255) -1.2%, rgb(246, 135, 255) 91.6%);
         }
 
         .container {
@@ -21,7 +22,9 @@
             margin: 10px ;
             max-width: 580px;
             min-width: 580px;
+            min-height:80px;
             padding:10px;
+            margin-left: 35px;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -29,9 +32,13 @@
             text-align: center;
             
         }
-        h1 {
-            margin-bottom: 20px; /* Add some space below the heading */
-        }
+        h1 { color: #111;
+             font-family: 'Helvetica Neue', sans-serif; 
+             font-weight: bold; 
+             letter-spacing: -1px;
+              line-height: 1;
+               text-align: center; }
+        
 
         p {
             margin-bottom: 10px; /* Add some space below paragraphs */
@@ -39,6 +46,7 @@
 
         .image-container {
             display: flex; /* Use flexbox for layout */
+            margin-left: 2%;
             justify-content: center; /* Center items horizontally */
             margin-top: 20px; /* Add some space above the images */
             float: left;
@@ -46,6 +54,7 @@
 
         .image-container img {
             margin: 0 10px; /* Add some space between images */
+
             max-width: 100%; /* Make sure the image doesn't exceed its container */
             height: auto; /* Maintain aspect ratio */
             border-radius: 5px; /* Add rounded corners to the image */
@@ -69,8 +78,8 @@
         .nextpagebutton{
             margin: 10px ;
             margin-left: 10%;
-            margin-right: 19%;
-            width: 20%;
+            margin-right: 15%;
+            width: 100%;
             max-width: 70%;
             padding:10px;
             background-color: white;
@@ -83,7 +92,7 @@
         
     </style>
 </head>
-<h1> Sentiment Analysis on Facebook comments</h1>
+<h1>  &nbsp;&nbsp; Sentiment Analysis on Facebook comments</h1>
 
 
 <body>
@@ -107,34 +116,30 @@
         <b>Positive comments: </b>{{ positive_count }}&nbsp;&nbsp;
     </div>
    
-
-
-
-    <br>
-    <br>
-    <br>
-    <br><br><br>
-    <br><br>
+    <div class="details"> 
+        <b>Most Positive Comment: <br></b> {{mostpositivecomment}}<br> 
+        <br>
+        <b>Score: </b>{{positive_score}}
+    </div>
 
     <div class="details"> 
         <b>Comment with most reactions : <br></b> {{mostreactedcomment}}
         <br><br>
-        <b>Reaction count:    &nbsp;&nbsp;  </b> {{ reactioncount}}
+        <b>Reaction count:    &nbsp;&nbsp;  </b> {{ reactioncount}}&nbsp;&nbsp; 
+        <b> Sentiment: &nbsp;&nbsp; </b> {{cwmrsentiment}}
     </div>
     
     <div class="details"> 
-        <b>Most Negative Comment: <br></b> {{mostnegativecomment}}
-        <b>Score: <br> </b>{{negative_score}}
+        <b>Most Negative Comment: <br></b> {{mostnegativecomment}}<br>
+        <br>
+        <b>Score:  </b>{{negative_score}}
     </div>
 
-    <div class="details"> 
-        <b>Most Positive Comment: <br></b> {{mostpositivecomment}}
-        <b>Score: <br> </b>{{positive_score}}
-    </div>
+   
 
 
     <div class="nextpagebutton" >
-        Test Model with custom comment
+        <strong>Test Model with custom comment</strong>
         <br>
         <br>
         <a href="/analyze"  ><button > 🡆</button></a>

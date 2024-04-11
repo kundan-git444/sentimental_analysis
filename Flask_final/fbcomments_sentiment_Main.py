@@ -25,14 +25,19 @@ model = AutoModelForSequenceClassification.from_pretrained(Model)
 import pandas as pd
 import re
 
+
 path = "csv files\ESUIT _ Comments Exporter for Facebook™ (200).csv"
+
+
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv(path)
 
-Number_of_comments = len(df)
+
 #downscale for easy running
-df = df.head(10)  #selecting top 10 comments
+#df = df.head(10)  #selecting top 100 comments
+
+Number_of_comments = len(df)
 
 # Define a function to remove special characters and non-English text
 def clean_text(text):
@@ -60,12 +65,11 @@ df['Author'] = df['Author'].apply(clean_text)
 df['cleaned_text'] = df['cleaned_text'].apply(lambda x: '-' if pd.isna(x) or x.strip() == '' else x)
 df['Author'] = df['Author'].apply(lambda x: 'Unknown_name' if pd.isna(x) or x.strip() == '' else x)
 print(df.head())
-
+# Save the modified DataFrame back to a CSV file
 
 
 
 #*************************************************************************
-
 # Function to get sentiment from text
 def polarity_scores_roberta(example):
     labels = ['Negative', 'Neutral', 'Positive']
@@ -74,7 +78,7 @@ def polarity_scores_roberta(example):
     scores = output[0][0].detach().numpy()
     scores = softmax(scores)
     sentiment = labels[scores.argmax()]
-    sentiment = [sentiment,max(scores)]
+    sentiment = [sentiment, max(scores)]
     return sentiment
 
 
@@ -89,43 +93,39 @@ def index():
     # Process the comments and count sentiments
     negative_count, neutral_count, positive_count = 0, 0, 0
 
-
-    #comment with most reactions
     reactioncount = 0
+    cwmrsentiment ="None"
     mostreactedcomment = "None"
-    
-    #most positive comment
-    positive_score = 0
-    mostpositivecomment = "None"
 
     #most negative comment
     negative_score = 0
     mostnegativecomment = "None"
-
-
+    
+    positive_score = 0
+    mostpositivecomment = "None"
 
     for i, row in df.iterrows():
         text = row['cleaned_text']
         tempcount = row['ReactionsCount']
+        
+        templist = polarity_scores_roberta(text)
+        roberta_result = templist[0]
+        score = templist[1]
         if tempcount > reactioncount:
             reactioncount = tempcount
             mostreactedcomment = row['Content']
-        temp_list = polarity_scores_roberta(text)[0]
-        roberta_result = temp_list[0]
-        score = temp_list[1]
-        
+            cwmrsentiment = roberta_result
         if roberta_result == "Negative":
             negative_count += 1
-            if score > negative_score:
-                negative_score = score 
+            if negative_score<score:
+                negative_score = score
                 mostnegativecomment = row['Content']
-            
         elif roberta_result == "Neutral":
             neutral_count += 1
         elif roberta_result == "Positive":
             positive_count += 1
-            if score > positive_score:
-                positive_score = score 
+            if positive_score<score:
+                positive_score = score
                 mostpositivecomment = row['Content']
 
 
@@ -162,7 +162,9 @@ def index():
     word_freq = Counter(tokens)
 
     # Find the most common keywords
-    most_common_keywords = word_freq.most_common(5)  
+    most_common_keywords = word_freq.most_common(5)  # Change 5 to the number of keywords you want to find
+
+    # Print the most common keywords
     
     categories = []
     values = []
@@ -187,16 +189,19 @@ def index():
                            reactioncount = reactioncount,
                            selectedfile = path[10:],
                            Number_of_comments = Number_of_comments,
+                           mostnegativecomment = mostnegativecomment,
+                           negative_score = negative_score,
                            mostpositivecomment = mostpositivecomment,
                            positive_score = positive_score,
-                           mostnegativecomment = mostnegativecomment,
-                           negative_score = negative_score)
+                           cwmrsentiment = cwmrsentiment)
 
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
     if request.method == 'POST':
         comment = request.form['comment']
-        sentiment = polarity_scores_roberta(comment)[0]
+        # Perform sentiment analysis on 'comment' here
+        # For now, let's assume sentiment is calculated as 'positive' for demonstration
+        sentiment = polarity_scores_roberta(comment)
         return render_template('analyze.html', sentiment=sentiment, comment=comment)
     return render_template('analyze.html')
 
