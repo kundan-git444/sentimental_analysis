@@ -32,7 +32,7 @@ df = pd.read_csv(path)
 
 Number_of_comments = len(df)
 #downscale for easy running
-df = df.head(10)  #selecting top 100 comments
+df = df.head(10)  #selecting top 10 comments
 
 # Define a function to remove special characters and non-English text
 def clean_text(text):
@@ -59,8 +59,8 @@ df['Author'] = df['Author'].apply(clean_text)
 # Replace empty cells in the 'cleaned_text' column with '-'
 df['cleaned_text'] = df['cleaned_text'].apply(lambda x: '-' if pd.isna(x) or x.strip() == '' else x)
 df['Author'] = df['Author'].apply(lambda x: 'Unknown_name' if pd.isna(x) or x.strip() == '' else x)
-#print(df.head())
-# Save the modified DataFrame back to a CSV file
+print(df.head())
+
 
 
 
