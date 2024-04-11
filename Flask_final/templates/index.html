@@ -46,6 +46,7 @@
 
         .image-container {
             display: flex; /* Use flexbox for layout */
+            margin-left: 3%;
             justify-content: center; /* Center items horizontally */
             margin-top: 20px; /* Add some space above the images */
             float: left;
@@ -137,21 +138,23 @@
    
 
 
-    <div class="nextpagebutton" >
-        <strong>Test Model with custom comment</strong>
-        <br>
-        <br>
-        <a href="/analyze"  ><button > 🡆</button></a>
-    </div>
+    
 
     <div class="image-container">
-        <img src="{{ url_for('static', filename='plot.png') }}" alt="Horizontal Bar Plot" width="600" height="400">
-        <img src="{{ url_for('static', filename='plot2.png') }}" alt="Horizontal Bar Plot" width="600" height="400">
+        <img src="{{ url_for('static', filename='plot.png') }}" alt="Sentimental Analysis" width="600" height="400">
+        <img src="{{ url_for('static', filename='plot2.png') }}" alt="Most common words" width="600" height="400">
     </div>
 
     <br>
     
+    
 </body>
+<div class="nextpagebutton" >
+    <strong>Test Model with custom comment</strong>
+    <br>
+    <br>
+    <a href="/analyze"  ><button > 🡆</button></a>
+</div>
 </html>
 
 <!-- <p>Negative comments: {{ negative_comments }}</p>

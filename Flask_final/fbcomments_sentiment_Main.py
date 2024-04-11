@@ -80,127 +80,125 @@ def polarity_scores_roberta(example):
     sentiment = labels[scores.argmax()]
     sentiment = [sentiment, max(scores)]
     return sentiment
+#**************************************************************************************
+#df = pd.read_csv(file, encoding='UTF-8')
+    # Process the comments and count sentiments
+negative_count, neutral_count, positive_count = 0, 0, 0
+
+#comment with mostreactions
+reactioncount = 0
+cwmrsentiment ="None"
+mostreactedcomment = "None"
+
+#most negative comment
+negative_score = 0
+mostnegativecomment = "None"
+
+positive_score = 0
+mostpositivecomment = "None"
+
+for i, row in df.iterrows():
+    text = row['cleaned_text']
+    tempcount = row['ReactionsCount']
+    
+    templist = polarity_scores_roberta(text)
+    roberta_result = templist[0]
+    score = templist[1]
+    if tempcount > reactioncount:
+        reactioncount = tempcount
+        mostreactedcomment = row['Content']
+        cwmrsentiment = templist[1]
+    if roberta_result == "Negative":
+        negative_count += 1
+        if negative_score<score:
+            negative_score = score
+            mostnegativecomment = row['Content']
+    elif roberta_result == "Neutral":
+        neutral_count += 1
+    elif roberta_result == "Positive":
+        positive_count += 1
+        if positive_score<score:
+            positive_score = score
+            mostpositivecomment = row['Content']
 
 
+categories =["Negative","Neutral", "Positive"]
+values = [negative_count, neutral_count, positive_count]
+plt.figure(figsize=(10, 6))
+colors = ['#db4437','#f4b400','#0e9d58']
+plt.barh(categories, values, color=colors)
+plt.xlabel('Count')
+plt.ylabel('Sentiment')
+plt.title('Sentiment_Analysis')
+plt.savefig("Flask_final\static\plot.png")
 
 
+# ************************* Counting Most Common Words*******************************************
+
+# Sample comments
+comments = df['cleaned_text']
+
+# Combine all comments into a single string
+all_text = ' '.join(comments)
+
+# Tokenize the text
+tokens = word_tokenize(all_text)
+
+# Remove punctuation
+tokens = [word.lower() for word in tokens if word.isalpha()]
+
+# Remove stopwords
+stop_words = set(stopwords.words('english'))
+tokens = [word for word in tokens if word not in stop_words]
+
+# Count the frequency of each word
+word_freq = Counter(tokens)
+
+# Find the most common keywords
+most_common_keywords = word_freq.most_common(5)  # Change 5 to the number of keywords you want to find
+
+# Print the most common keywords
+
+categories = []
+values = []
+
+for keyword, freq in most_common_keywords:
+    categories.append(keyword)
+    values.append(freq)
+
+
+plt.figure(figsize=(10, 6))
+plt.barh(categories, values, color='#2bc2c2')
+plt.xlabel('Count')
+plt.ylabel('Freqent words')
+plt.title('Most Common Words')
+plt.savefig("Flask_final\static\plot2.png")
+#************************Data to be sent to html page *******************************************************
+
+template_data = {
+    'negative_count': negative_count,
+    'neutral_count': neutral_count,
+    'positive_count': positive_count,
+    'mostreactedcomment': mostreactedcomment,
+    'reactioncount': reactioncount,
+    'selectedfile': path[10:],
+    'Number_of_comments': Number_of_comments,
+    'mostnegativecomment': mostnegativecomment,
+    'negative_score': negative_score,
+    'mostpositivecomment': mostpositivecomment,
+    'positive_score': positive_score,
+    'cwmrsentiment': cwmrsentiment
+}
+#**************Flask Routes***********************************************************
 @app.route('/')
 def index():
-    # Read the cleaned comments from CSV file
-    
-    #df = pd.read_csv(file, encoding='UTF-8')
+    return render_template('index.html', **template_data)
 
-    # Process the comments and count sentiments
-    negative_count, neutral_count, positive_count = 0, 0, 0
-
-    reactioncount = 0
-    cwmrsentiment ="None"
-    mostreactedcomment = "None"
-
-    #most negative comment
-    negative_score = 0
-    mostnegativecomment = "None"
-    
-    positive_score = 0
-    mostpositivecomment = "None"
-
-    for i, row in df.iterrows():
-        text = row['cleaned_text']
-        tempcount = row['ReactionsCount']
-        
-        templist = polarity_scores_roberta(text)
-        roberta_result = templist[0]
-        score = templist[1]
-        if tempcount > reactioncount:
-            reactioncount = tempcount
-            mostreactedcomment = row['Content']
-            cwmrsentiment = templist[1]
-        if roberta_result == "Negative":
-            negative_count += 1
-            if negative_score<score:
-                negative_score = score
-                mostnegativecomment = row['Content']
-        elif roberta_result == "Neutral":
-            neutral_count += 1
-        elif roberta_result == "Positive":
-            positive_count += 1
-            if positive_score<score:
-                positive_score = score
-                mostpositivecomment = row['Content']
-
-
-    categories =["Negative","Neutral", "Positive"]
-    values = [negative_count, neutral_count, positive_count]
-    plt.figure(figsize=(10, 6))
-    colors = ['#db4437','#f4b400','#0e9d58']
-    plt.barh(categories, values, color=colors)
-    plt.xlabel('Count')
-    plt.ylabel('Sentiment')
-    plt.title('Sentiment_Analysis')
-    plt.savefig("Flask_final\static\plot.png")
-
-   
-
-
-    # Sample comments
-    comments = df['cleaned_text']
-
-    # Combine all comments into a single string
-    all_text = ' '.join(comments)
-
-    # Tokenize the text
-    tokens = word_tokenize(all_text)
-
-    # Remove punctuation
-    tokens = [word.lower() for word in tokens if word.isalpha()]
-
-    # Remove stopwords
-    stop_words = set(stopwords.words('english'))
-    tokens = [word for word in tokens if word not in stop_words]
-
-    # Count the frequency of each word
-    word_freq = Counter(tokens)
-
-    # Find the most common keywords
-    most_common_keywords = word_freq.most_common(5)  # Change 5 to the number of keywords you want to find
-
-    # Print the most common keywords
-    
-    categories = []
-    values = []
-
-    for keyword, freq in most_common_keywords:
-        categories.append(keyword)
-        values.append(freq)
-
-    
-    plt.figure(figsize=(10, 6))
-    plt.barh(categories, values, color='#2bc2c2')
-    plt.xlabel('Count')
-    plt.ylabel('Freqent words')
-    plt.title('Most Common Words')
-    plt.savefig("Flask_final\static\plot2.png")
-    
-    return render_template('index.html', 
-                           negative_count = negative_count,
-                           neutral_count = neutral_count,
-                           positive_count = positive_count,
-                           mostreactedcomment = mostreactedcomment,
-                           reactioncount = reactioncount,
-                           selectedfile = path[10:],
-                           Number_of_comments = Number_of_comments,
-                           mostnegativecomment = mostnegativecomment,
-                           negative_score = negative_score,
-                           mostpositivecomment = mostpositivecomment,
-                           positive_score = positive_score,
-                           cwmrsentiment = cwmrsentiment)
 
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
     if request.method == 'POST':
         comment = request.form['comment']
-        # Perform sentiment analysis on 'comment' here
-        # For now, let's assume sentiment is calculated as 'positive' for demonstration
         sentiment = polarity_scores_roberta(comment)
         return render_template('analyze.html', sentiment=sentiment[0], comment=comment)
     return render_template('analyze.html')
