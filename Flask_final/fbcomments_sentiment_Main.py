@@ -25,17 +25,14 @@ model = AutoModelForSequenceClassification.from_pretrained(Model)
 import pandas as pd
 import re
 
-
 path = "csv files\ESUIT _ Comments Exporter for Facebook™ (200).csv"
-
-
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv(path)
 
 Number_of_comments = len(df)
 #downscale for easy running
-#df = df.head(10)  #selecting top 100 comments
+df = df.head(10)  #selecting top 100 comments
 
 # Define a function to remove special characters and non-English text
 def clean_text(text):
@@ -62,7 +59,7 @@ df['Author'] = df['Author'].apply(clean_text)
 # Replace empty cells in the 'cleaned_text' column with '-'
 df['cleaned_text'] = df['cleaned_text'].apply(lambda x: '-' if pd.isna(x) or x.strip() == '' else x)
 df['Author'] = df['Author'].apply(lambda x: 'Unknown_name' if pd.isna(x) or x.strip() == '' else x)
-print(df.head())
+#print(df.head())
 # Save the modified DataFrame back to a CSV file
 
 
@@ -77,6 +74,7 @@ def polarity_scores_roberta(example):
     scores = output[0][0].detach().numpy()
     scores = softmax(scores)
     sentiment = labels[scores.argmax()]
+    sentiment = [sentiment,max(scores)]
     return sentiment
 
 
@@ -91,22 +89,44 @@ def index():
     # Process the comments and count sentiments
     negative_count, neutral_count, positive_count = 0, 0, 0
 
+
+    #comment with most reactions
     reactioncount = 0
     mostreactedcomment = "None"
     
+    #most positive comment
+    positive_score = 0
+    mostpositivecomment = "None"
+
+    #most negative comment
+    negative_score = 0
+    mostnegativecomment = "None"
+
+
+
     for i, row in df.iterrows():
         text = row['cleaned_text']
         tempcount = row['ReactionsCount']
         if tempcount > reactioncount:
             reactioncount = tempcount
             mostreactedcomment = row['Content']
-        roberta_result = polarity_scores_roberta(text)
+        temp_list = polarity_scores_roberta(text)[0]
+        roberta_result = temp_list[0]
+        score = temp_list[1]
+        
         if roberta_result == "Negative":
             negative_count += 1
+            if score > negative_score:
+                negative_score = score 
+                mostnegativecomment = row['Content']
+            
         elif roberta_result == "Neutral":
             neutral_count += 1
         elif roberta_result == "Positive":
             positive_count += 1
+            if score > positive_score:
+                positive_score = score 
+                mostpositivecomment = row['Content']
 
 
     categories =["Negative","Neutral", "Positive"]
@@ -166,13 +186,17 @@ def index():
                            mostreactedcomment = mostreactedcomment,
                            reactioncount = reactioncount,
                            selectedfile = path[10:],
-                           Number_of_comments = Number_of_comments)
+                           Number_of_comments = Number_of_comments,
+                           mostpositivecomment = mostpositivecomment,
+                           positive_score = positive_score,
+                           mostnegativecomment = mostnegativecomment,
+                           negative_score = negative_score)
 
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
     if request.method == 'POST':
         comment = request.form['comment']
-        sentiment = polarity_scores_roberta(comment)
+        sentiment = polarity_scores_roberta(comment)[0]
         return render_template('analyze.html', sentiment=sentiment, comment=comment)
     return render_template('analyze.html')
 
