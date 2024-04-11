@@ -114,7 +114,7 @@ def index():
         if tempcount > reactioncount:
             reactioncount = tempcount
             mostreactedcomment = row['Content']
-            cwmrsentiment = roberta_result
+            cwmrsentiment = templist[1]
         if roberta_result == "Negative":
             negative_count += 1
             if negative_score<score:
@@ -202,7 +202,7 @@ def analyze():
         # Perform sentiment analysis on 'comment' here
         # For now, let's assume sentiment is calculated as 'positive' for demonstration
         sentiment = polarity_scores_roberta(comment)
-        return render_template('analyze.html', sentiment=sentiment, comment=comment)
+        return render_template('analyze.html', sentiment=sentiment[0], comment=comment)
     return render_template('analyze.html')
 
 
