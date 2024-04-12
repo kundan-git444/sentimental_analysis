@@ -107,7 +107,7 @@ for i, row in df.iterrows():
     if tempcount > reactioncount:
         reactioncount = tempcount
         mostreactedcomment = row['Content']
-        cwmrsentiment = templist[1]
+        cwmrsentiment = roberta_result
     if roberta_result == "Negative":
         negative_count += 1
         negative_reactions += tempcount
